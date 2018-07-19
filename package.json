@@ -1,8 +1,10 @@
 {
   "name": "eastern",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "index.mjs",
-  "files": ["index.mjs"],
+  "files": [
+    "index.mjs"
+  ],
   "scripts": {
     "start": "abby format, test --watch \"{,*.mjs}\"",
     "test": "node --experimental-modules test.mjs",
