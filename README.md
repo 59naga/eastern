@@ -37,7 +37,7 @@ API
 ---
 ## `spec(title, context)`
 
-## `spec.x` / `spec.disable`
+## `spec.skip`
 
 ## `spec.only`
 

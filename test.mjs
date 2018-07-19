@@ -46,11 +46,10 @@ const specs = [
     EASTERN_MESSAGES.UNMATCH,
   ],
   [
-    'should skip a spec if spec.x/spec.disable defined',
+    'should skip a spec if spec.skip defined',
     `
       import spec from "../../index.mjs";
-      spec.x("", () => {});
-      spec.disable("", () => {});
+      spec.skip("", () => {});
     `,
     1,
     EASTERN_MESSAGES.MISSING,

@@ -30,10 +30,7 @@ const it = (...args) => {
     }
   });
 };
-it.x = title => {
-  report(chalk.cyan(`- ${title}`));
-};
-it.disable = title => {
+it.skip = title => {
   report(chalk.cyan(`- ${title}`));
 };
 it.only = (...args) => {
