@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "main": "index.mjs",
   "scripts": {
-    "start": "abby format, test --watch \"{README.md,*.mjs}\"",
+    "start": "abby format, test --watch \"{,*.mjs}\"",
     "test": "node --experimental-modules test.mjs",
-    "format": "prettier README.md *.{js,mjs} --write",
+    "format": "prettier *.{js,mjs} --write",
     "postversion": "git push --follow-tags"
   },
   "dependencies": {
@@ -16,7 +16,8 @@
     "abigail": "^1.9.5",
     "bluebird": "^3.5.1",
     "mkdirp": "^0.5.1",
-    "prettier": "^1.13.7"
+    "prettier": "^1.13.7",
+    "strip-ansi": "^4.0.0"
   },
   "prettier": {
     "singleQuote": true,

@@ -4,19 +4,23 @@ import { writeFileSync } from 'fs';
 import { spawn } from 'child_process';
 import assert from 'assert';
 import chalk from 'chalk';
+import stripAnsi from 'strip-ansi';
+import { EASTERN_MESSAGES } from './index.mjs';
+
+global.EASTERN_NOHOOK = true;
 
 const specs = [
   [
     'should exit 1 if spec undefined',
     `import '../../index.mjs'`,
     1,
-    'was imported, but spec is not defined',
+    EASTERN_MESSAGES.MISSING,
   ],
   [
     'should exit 0 if spec defined',
     `
       import spec from "../../index.mjs";
-      spec("", () => {});
+      spec("1", () => {});
     `,
     0,
   ],
@@ -29,7 +33,7 @@ const specs = [
       });
     `,
     1,
-    'test failing',
+    EASTERN_MESSAGES.FAIL,
   ],
   [
     'should exit 1 if exists hiding spec using spec.only',
@@ -39,7 +43,7 @@ const specs = [
       spec.only("", () => {});
     `,
     1,
-    "number of spec doesn't match the success number",
+    EASTERN_MESSAGES.UNMATCH,
   ],
   [
     'should skip a spec if spec.x/spec.disable defined',
@@ -49,11 +53,12 @@ const specs = [
       spec.disable("", () => {});
     `,
     1,
-    'was imported, but spec is not defined',
+    EASTERN_MESSAGES.MISSING,
   ],
 ];
 
-mkdirp.sync('./node_modules/~');
+const fixtureDir = './node_modules/~';
+mkdirp.sync(fixtureDir);
 const evaluteExperimentalModule = (
   title,
   code,
@@ -61,15 +66,15 @@ const evaluteExperimentalModule = (
   expectedError = ''
 ) => {
   return new Promise((resolve, reject) => {
-    const file = './node_modules/~/test.mjs';
+    const file = `${fixtureDir}/test.mjs`;
     writeFileSync(file, code);
 
     let actualError = '';
     const child = spawn('node', ['--experimental-modules', file]);
     child.stderr.on('data', data => {
-      const stderr = data.toString();
+      const stderr = stripAnsi(data.toString()).trim();
       if (stderr.match(/^Eastern: /)) {
-        actualError += stderr.replace(/^Eastern: /, '').trim();
+        actualError += stderr.trim();
       }
     });
     child.on('exit', code => {

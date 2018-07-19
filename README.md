@@ -1,6 +1,6 @@
 # Eastern
 
-a minimal BDD interface for [ESM Modules](https://nodejs.org/api/esm.html#esm_enabling)
+a minimal BDD interface / reporter for [ESM Modules](https://nodejs.org/api/esm.html#esm_enabling)
 
 ## Installation
 
