@@ -26,7 +26,7 @@ const it = (...args) => {
     if (itOnly === false) {
       _it(...args);
     } else {
-      report(chalk.cyan(`- ${title}`));
+      report(chalk.cyan(`- ${args[0]}`));
     }
   });
 };
