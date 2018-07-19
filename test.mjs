@@ -20,7 +20,7 @@ const specs = [
     'should exit 0 if spec defined',
     `
       import spec from "../../index.mjs";
-      spec("1", () => {});
+      spec("", () => {});
     `,
     0,
   ],

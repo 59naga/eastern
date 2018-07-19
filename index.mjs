@@ -1,65 +1,68 @@
 import exitHook from 'exit-hook';
 import chalk from 'chalk';
 
-const report = (...args) => {
+const log = (...args) => {
   console.log(...[' ', ...args]);
 };
-const warn = (...args) => {
+const logWarn = (...args) => {
   console.error(...[' ', ...args]);
 };
-const elapsed = start => Date.now() - start;
 export const EASTERN_MESSAGES = {
+  PASS: 'Eastern: d+ passing',
   FAIL: 'Eastern: test failing',
   MISSING: "Eastern: was imported, but spec isn't passed",
   UNMATCH: "Eastern: number of spec doesn't match the number of passed",
 };
 
-let itOnly = false;
-let itCount = 0;
-let itSuccess = 0;
-let itFailure = 0;
-const errors = [];
+let specOnly = false;
+let specCount = 0;
+let specSuccess = 0;
+let specFailure = 0;
+const failures = [];
 
-const it = (...args) => {
-  itCount++;
+const spec = (...args) => {
+  specCount++;
+
   setImmediate(() => {
-    if (itOnly === false) {
-      _it(...args);
+    if (specOnly === false) {
+      _spec(...args);
     } else {
-      report(chalk.cyan(`- ${args[0]}`));
+      log(chalk.cyan(`- ${args[0]}`));
     }
   });
 };
-it.skip = title => {
-  report(chalk.cyan(`- ${title}`));
+spec.skip = title => {
+  setImmediate(() => {
+    log(chalk.cyan(`- ${title}`));
+  });
 };
-it.only = (...args) => {
-  itCount++;
-  itOnly = true;
+spec.only = (...args) => {
+  specCount++;
+  specOnly = true;
 
   setImmediate(() => {
-    _it(...args);
+    _spec(...args);
   });
 };
 
-const _it = async (title, fn) => {
+const _spec = async (title, fn) => {
   const start = Date.now();
   try {
     await fn();
-    report(
+    log(
       chalk.green('✓'),
       ` ${chalk.gray(title)}`,
-      chalk.grey(`(${elapsed(start)} ms)`)
+      chalk.grey(`(${Date.now() - start} ms)`)
     );
-    itSuccess++;
+    specSuccess++;
   } catch (e) {
-    itFailure++;
-    warn(chalk.red(`${itFailure}) ${title}`));
-    errors.push([itFailure, title, e.stack]);
+    specFailure++;
+    logWarn(chalk.red(`${specFailure}) ${title}`));
+    failures.push([specFailure, title, e.stack]);
   }
 };
 
-export default it;
+export default spec;
 
 const begin = Date.now();
 exitHook(() => {
@@ -67,32 +70,35 @@ exitHook(() => {
     return;
   }
 
-  report();
-  if (itFailure) {
-    report(
-      chalk.green(`${itSuccess} passing`),
-      chalk.grey(`(${elapsed(begin)} ms)`)
-    );
-    report(chalk.red(`${itFailure} failing`));
-    report();
-    errors.map(([num, title, stack]) => {
-      warn(`${num}) ${title}\n  ${chalk.red(stack)}`);
-    });
-    report();
+  log();
 
-    warn(chalk.red.underline(EASTERN_MESSAGES.FAIL));
+  if (specFailure) {
+    log(
+      chalk.green(`${specSuccess} passing`),
+      chalk.grey(`(${Date.now() - begin} ms)`)
+    );
+    log(chalk.red(`${specFailure} failing`));
+
+    log();
+    failures.map(([num, title, stack = 'No stacktrace']) => {
+      logWarn(`${num}) ${title}\n  ${chalk.red(stack)}`);
+    });
+    log();
+
+    logWarn(chalk.red.underline(EASTERN_MESSAGES.FAIL));
     process.exit(1);
   }
-  if (itCount === 0) {
-    warn(chalk.red.underline(EASTERN_MESSAGES.MISSING));
+  if (specCount === 0) {
+    logWarn(chalk.red.underline(EASTERN_MESSAGES.MISSING));
     process.exit(1);
   }
-  if (itCount !== itSuccess) {
-    warn(chalk.red.underline(EASTERN_MESSAGES.UNMATCH));
+  if (specCount !== specSuccess) {
+    logWarn(chalk.red.underline(EASTERN_MESSAGES.UNMATCH));
     process.exit(1);
   }
-  report(
-    chalk.green(`${itSuccess} passing`),
-    chalk.grey(`(${elapsed(begin)} ms)`)
+
+  log(
+    chalk.green.underline(`Eastern: ${specSuccess} passing`),
+    chalk.grey(`(${Date.now() - begin} ms)`)
   );
 });

@@ -36,9 +36,7 @@ node --experimental-modules test.mjs
 API
 ---
 ## `spec(title, context)`
-
 ## `spec.skip`
-
 ## `spec.only`
 
 License
