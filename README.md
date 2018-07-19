@@ -1,15 +1,25 @@
-# Eastern
+Eastern
+---
+
+<p align="right">
+  <a href="https://www.npmjs.com/package/eastern">
+    <img alt="Npm version" src="https://badge.fury.io/js/eastern.svg">
+  </a>
+  <a href="https://travis-ci.org/59naga/eastern">
+    <img alt="Build Status" src="https://travis-ci.org/59naga/eastern.svg?branch=master">
+  </a>
+</p>
 
 a minimal BDD interface / reporter for [ESM Modules](https://nodejs.org/api/esm.html#esm_enabling)
 
-## Installation
-
+Installation
+---
 ```
 yarn add -D eastern
 ```
 
-## Getting started
-
+Getting started
+---
 ```js
 // test.mjs
 import spec from 'eastern';
@@ -23,14 +33,14 @@ node --experimental-modules test.mjs
 # exit code 1
 ```
 
-## API
+API
+---
+## `spec(title, context)`
 
-### `spec(title, context)`
+## `spec.x` / `spec.disable`
 
-### `spec.x` / `spec.disable`
+## `spec.only`
 
-### `spec.only`
-
-# License
-
+License
+---
 MIT
