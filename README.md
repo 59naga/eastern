@@ -44,11 +44,11 @@ If `context` is Promise, the runner waits until 1000ms and handle it as a failur
 // test.mjs
 import spec from 'eastern';
 
-spec('heavy task', async function(){
+spec('heavy task', async function() {
   await new Promise(resolve => {
-    setTimeout(resolve, 2000)
-  })
-})
+    setTimeout(resolve, 2000);
+  });
+});
 ```
 
 ```bash
@@ -72,11 +72,11 @@ It is handled as todo and not counted as the number of specs
 // test.mjs
 import spec from 'eastern';
 
-spec.skip('heavy task', async function(){
+spec.skip('heavy task', async function() {
   await new Promise(resolve => {
-    setTimeout(resolve, 2000)
-  })
-})
+    setTimeout(resolve, 2000);
+  });
+});
 ```
 
 ```bash
@@ -93,7 +93,7 @@ Things that don't have ".only" will not be run and the entire test will fail unl
 
 ```js
 // test.mjs
-import spec from './';
+import spec from 'eastern';
 
 spec('expect passing 1', () => {});
 spec.only('expect passing 2', () => {});
