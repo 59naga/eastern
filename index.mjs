@@ -45,10 +45,20 @@ spec.only = (...args) => {
   });
 };
 
-const _spec = async (title, fn) => {
+function run(fn, opts = {}) {
+  let timetId;
+  return Promise.race([
+    fn(),
+    new Promise(
+      (_, reject) => (timetId = setTimeout(reject, opts.timeout || 1000))
+    ),
+  ]).then(() => clearTimeout(timetId));
+}
+
+const _spec = async (title, fn, opts = {}) => {
   const start = Date.now();
   try {
-    await fn();
+    await run(fn, opts);
     log(
       chalk.green('✓'),
       ` ${chalk.gray(title)}`,

@@ -12,7 +12,10 @@ global.EASTERN_NOHOOK = true;
 const specs = [
   [
     'should exit 1 if spec undefined',
-    `import '../../index.mjs'`,
+    `
+      import "../../index.mjs";
+      // noop
+    `,
     1,
     EASTERN_MESSAGES.MISSING,
   ],
@@ -53,6 +56,23 @@ const specs = [
     `,
     1,
     EASTERN_MESSAGES.MISSING,
+  ],
+  [
+    'should timeout a spec if over 100ms',
+    `
+      import spec from "../../index.mjs";
+      spec(
+        "",
+        async () => {
+          await new Promise(resolve => {
+            setTimeout(resolve, 500);
+          });
+        },
+        { timeout: 100 }
+      );
+    `,
+    1,
+    EASTERN_MESSAGES.FAIL,
   ],
 ];
 
