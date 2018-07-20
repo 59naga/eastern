@@ -5,9 +5,9 @@ import { spawn } from 'child_process';
 import assert from 'assert';
 import chalk from 'chalk';
 import stripAnsi from 'strip-ansi';
-import { EASTERN_MESSAGES } from './index.mjs';
+import EASTERN from './index.mjs';
 
-global.EASTERN_NOHOOK = true;
+EASTERN.NOHOOK = true;
 
 const specs = [
   [
@@ -17,7 +17,7 @@ const specs = [
       // noop
     `,
     1,
-    EASTERN_MESSAGES.MISSING,
+    EASTERN.MESSAGES.MISSING,
   ],
   [
     'should exit 0 if spec defined',
@@ -36,7 +36,7 @@ const specs = [
       });
     `,
     1,
-    EASTERN_MESSAGES.FAIL,
+    EASTERN.MESSAGES.FAIL,
   ],
   [
     'should exit 1 if exists hiding spec using spec.only',
@@ -46,7 +46,7 @@ const specs = [
       spec.only("", () => {});
     `,
     1,
-    EASTERN_MESSAGES.UNMATCH,
+    EASTERN.MESSAGES.UNMATCH,
   ],
   [
     'should skip a spec if spec.skip defined',
@@ -55,7 +55,7 @@ const specs = [
       spec.skip("", () => {});
     `,
     1,
-    EASTERN_MESSAGES.MISSING,
+    EASTERN.MESSAGES.MISSING,
   ],
   [
     'should timeout a spec if over 100ms',
@@ -72,7 +72,7 @@ const specs = [
       );
     `,
     1,
-    EASTERN_MESSAGES.FAIL,
+    EASTERN.MESSAGES.FAIL,
   ],
 ];
 

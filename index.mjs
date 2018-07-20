@@ -1,18 +1,7 @@
 import exitHook from 'exit-hook';
 import chalk from 'chalk';
 
-const log = (...args) => {
-  console.log(...[' ', ...args]);
-};
-const logWarn = (...args) => {
-  console.error(...[' ', ...args]);
-};
-export const EASTERN_MESSAGES = {
-  PASS: 'Eastern: d+ passing',
-  FAIL: 'Eastern: test failing',
-  MISSING: "Eastern: was imported, but spec isn't passed",
-  UNMATCH: "Eastern: number of spec doesn't match the number of passed",
-};
+// private
 
 let specOnly = false;
 let specCount = 0;
@@ -20,12 +9,55 @@ let specSuccess = 0;
 let specFailure = 0;
 const failures = [];
 
+// utils
+
+function log(...args) {
+  console.log(...[' ', ...args]);
+}
+function logWarn(...args) {
+  console.error(...[' ', ...args]);
+}
+
+async function run(title, fn, opts = {}) {
+  const start = Date.now();
+  try {
+    await _run(fn, opts);
+    log(
+      chalk.green('✓'),
+      ` ${chalk.gray(title)}`,
+      chalk.grey(`(${Date.now() - start} ms)`)
+    );
+    specSuccess++;
+  } catch (e) {
+    specFailure++;
+    logWarn(chalk.red(`${specFailure}) ${title}`));
+    failures.push([specFailure, title, e.stack]);
+  }
+}
+
+function _run(fn, opts = {}) {
+  let timetId;
+  const delay = opts.timeout || spec.TIMEOUT;
+  return Promise.race([
+    fn(),
+    new Promise(
+      (_, reject) =>
+        (timetId = setTimeout(
+          () => reject(new Error(`timeout of ${delay}ms`)),
+          delay
+        ))
+    ),
+  ]).then(() => clearTimeout(timetId));
+}
+
+// core
+
 const spec = (...args) => {
   specCount++;
 
   setImmediate(() => {
     if (specOnly === false) {
-      _spec(...args);
+      run(...args);
     } else {
       log(chalk.cyan(`- ${args[0]}`));
     }
@@ -41,42 +73,24 @@ spec.only = (...args) => {
   specOnly = true;
 
   setImmediate(() => {
-    _spec(...args);
+    run(...args);
   });
 };
-
-function run(fn, opts = {}) {
-  let timetId;
-  return Promise.race([
-    fn(),
-    new Promise(
-      (_, reject) => (timetId = setTimeout(reject, opts.timeout || 1000))
-    ),
-  ]).then(() => clearTimeout(timetId));
-}
-
-const _spec = async (title, fn, opts = {}) => {
-  const start = Date.now();
-  try {
-    await run(fn, opts);
-    log(
-      chalk.green('✓'),
-      ` ${chalk.gray(title)}`,
-      chalk.grey(`(${Date.now() - start} ms)`)
-    );
-    specSuccess++;
-  } catch (e) {
-    specFailure++;
-    logWarn(chalk.red(`${specFailure}) ${title}`));
-    failures.push([specFailure, title, e.stack]);
-  }
+spec.TIMEOUT = 1000;
+spec.MESSAGES = {
+  PASS: 'Eastern: d+ passing',
+  FAIL: 'Eastern: test failing',
+  MISSING: "Eastern: was imported, but spec isn't passed",
+  UNMATCH: "Eastern: number of spec doesn't equal the number of pass",
 };
 
 export default spec;
 
+// process exit hooks using private
+
 const begin = Date.now();
 exitHook(() => {
-  if (global.EASTERN_NOHOOK) {
+  if (spec.NOHOOK) {
     return;
   }
 
@@ -95,15 +109,15 @@ exitHook(() => {
     });
     log();
 
-    logWarn(chalk.red.underline(EASTERN_MESSAGES.FAIL));
+    logWarn(chalk.red.underline(spec.MESSAGES.FAIL));
     process.exit(1);
   }
   if (specCount === 0) {
-    logWarn(chalk.red.underline(EASTERN_MESSAGES.MISSING));
+    logWarn(chalk.red.underline(spec.MESSAGES.MISSING));
     process.exit(1);
   }
   if (specCount !== specSuccess) {
-    logWarn(chalk.red.underline(EASTERN_MESSAGES.UNMATCH));
+    logWarn(chalk.red.underline(spec.MESSAGES.UNMATCH));
     process.exit(1);
   }
 
