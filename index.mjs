@@ -33,6 +33,10 @@ async function run(title, fn, opts = {}) {
     logWarn(chalk.red(`${specFailure}) ${title}`));
     failures.push([specFailure, title, e.stack]);
   }
+  // FIX: #1
+  if (specCount === specSuccess + specFailure) {
+    process.emit('exit');
+  }
 }
 
 function _run(fn, opts = {}) {

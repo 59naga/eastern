@@ -74,6 +74,23 @@ const specs = [
     1,
     EASTERN.MESSAGES.FAIL,
   ],
+  [
+    '#1: should exit the process immediately when all the tests are completed',
+    `
+      import spec from 'eastern';
+      import { strictEqual } from 'assert';
+      import { createServer } from 'http';
+      
+      spec('continuous process', () => {
+        const server = createServer();
+        server.listen(() => {});
+        strictEqual(true, false); // hang
+        server.close(); // because connection will continue remaining
+      });
+    `,
+    1,
+    '',
+  ],
 ];
 
 const fixtureDir = './node_modules/~';
