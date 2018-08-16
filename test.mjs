@@ -17,6 +17,7 @@ const specs = [
       // noop
     `,
     1,
+    '',
     EASTERN.MESSAGES.MISSING,
   ],
   [
@@ -26,6 +27,7 @@ const specs = [
       spec("", () => {});
     `,
     0,
+    'Eastern: 1 passing',
   ],
   [
     'should exit 1 if spec failing',
@@ -36,6 +38,7 @@ const specs = [
       });
     `,
     1,
+    '',
     EASTERN.MESSAGES.FAIL,
   ],
   [
@@ -46,6 +49,7 @@ const specs = [
       spec.only("", () => {});
     `,
     1,
+    '',
     EASTERN.MESSAGES.UNMATCH,
   ],
   [
@@ -55,6 +59,7 @@ const specs = [
       spec.skip("", () => {});
     `,
     1,
+    '',
     EASTERN.MESSAGES.MISSING,
   ],
   [
@@ -72,15 +77,16 @@ const specs = [
       );
     `,
     1,
+    '',
     EASTERN.MESSAGES.FAIL,
   ],
   [
     '#1: should exit the process immediately when all the tests are completed',
     `
-      import spec from 'eastern';
+      import spec from '../../index.mjs';
       import { strictEqual } from 'assert';
       import { createServer } from 'http';
-      
+
       spec('continuous process', () => {
         const server = createServer();
         server.listen(() => {});
@@ -90,6 +96,7 @@ const specs = [
     `,
     1,
     '',
+    EASTERN.MESSAGES.FAIL,
   ],
 ];
 
@@ -99,14 +106,26 @@ const evaluteExperimentalModule = (
   title,
   code,
   expectExitCode,
+  expectedPass = '',
   expectedError = ''
 ) => {
   return new Promise((resolve, reject) => {
     const file = `${fixtureDir}/test.mjs`;
     writeFileSync(file, code);
 
+    let actualPass = '';
     let actualError = '';
-    const child = spawn('node', ['--experimental-modules', file]);
+    const child = spawn('node', [
+      '--experimental-modules',
+      '--no-warnings',
+      file,
+    ]);
+    child.stdout.on('data', data => {
+      const stdout = stripAnsi(data.toString()).trim();
+      if (stdout.match(/^Eastern: /)) {
+        actualPass += stdout.replace(/\(\d+ ms\)/, '').trim();
+      }
+    });
     child.stderr.on('data', data => {
       const stderr = stripAnsi(data.toString()).trim();
       if (stderr.match(/^Eastern: /)) {
@@ -116,6 +135,7 @@ const evaluteExperimentalModule = (
     child.on('exit', code => {
       try {
         assert.equal(code, expectExitCode);
+        assert.equal(actualPass, expectedPass);
         assert.equal(actualError, expectedError);
       } catch (error) {
         reject(`${title}:\n  ${error}`);
