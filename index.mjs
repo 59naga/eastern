@@ -3,8 +3,9 @@ import chalk from 'chalk';
 
 // private
 
-let specOnly = false;
 let specCount = 0;
+let specOnly = false;
+let specOnlyCount = 0;
 let specSuccess = 0;
 let specFailure = 0;
 let specHookFailure = 0;
@@ -66,7 +67,10 @@ async function run(title, fn, opts = {}) {
   }
 
   // FIX: #1
-  if (specCount === specSuccess + specFailure) {
+  const isDone =
+    specCount === specSuccess + specFailure ||
+    specOnlyCount === specSuccess + specFailure;
+  if (isDone) {
     try {
       await Promise.all(specHooks.after.map(hook => hook()));
     } catch (error) {
@@ -125,6 +129,7 @@ spec.skip = title => {
 spec.only = (...args) => {
   specCount++;
   specOnly = true;
+  specOnlyCount++;
 
   setImmediate(() => {
     run(...args);
