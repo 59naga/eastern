@@ -7,6 +7,13 @@ let specOnly = false;
 let specCount = 0;
 let specSuccess = 0;
 let specFailure = 0;
+let specHookFailure = 0;
+const specHooks = {
+  before: [],
+  after: [],
+  beforeEach: [],
+  afterEach: [],
+};
 const failures = [];
 
 // utils
@@ -19,6 +26,22 @@ function logWarn(...args) {
 }
 
 async function run(title, fn, opts = {}) {
+  try {
+    await Promise.all(specHooks.before);
+  } catch (error) {
+    specHookFailure++;
+    logWarn(chalk.red(`before hooks)\n  ${chalk.red(error.stack)}`));
+    process.emit('exit');
+  }
+
+  try {
+    await Promise.all(specHooks.beforeEach.map(hook => hook()));
+  } catch (error) {
+    specHookFailure++;
+    logWarn(chalk.red(`beforeEach hooks)\n  ${chalk.red(error.stack)}`));
+    process.emit('exit');
+  }
+
   const start = Date.now();
   try {
     await _run(fn, opts);
@@ -33,8 +56,23 @@ async function run(title, fn, opts = {}) {
     logWarn(chalk.red(`${specFailure}) ${title}`));
     failures.push([specFailure, title, e.stack]);
   }
+
+  try {
+    await Promise.all(specHooks.afterEach.map(hook => hook()));
+  } catch (error) {
+    specHookFailure++;
+    logWarn(chalk.red(`afterEach hooks)\n  ${chalk.red(error.stack)}`));
+    process.emit('exit');
+  }
+
   // FIX: #1
   if (specCount === specSuccess + specFailure) {
+    try {
+      await Promise.all(specHooks.after.map(hook => hook()));
+    } catch (error) {
+      specHookFailure++;
+      logWarn(chalk.red(`after hooks)\n  ${chalk.red(error.stack)}`));
+    }
     process.emit('exit');
   }
 }
@@ -66,6 +104,18 @@ const spec = (...args) => {
       log(chalk.cyan(`- ${args[0]}`));
     }
   });
+};
+spec.before = (...args) => {
+  specHooks.before.push(_run(...args));
+};
+spec.after = (...args) => {
+  specHooks.after.push(...args);
+};
+spec.beforeEach = (...args) => {
+  specHooks.beforeEach.push(...args);
+};
+spec.afterEach = (...args) => {
+  specHooks.afterEach.push(...args);
 };
 spec.skip = title => {
   setImmediate(() => {
@@ -100,7 +150,7 @@ exitHook(() => {
 
   log();
 
-  if (specFailure) {
+  if (specFailure || specHookFailure) {
     log(
       chalk.green(`${specSuccess} passing`),
       chalk.grey(`(${Date.now() - begin} ms)`)
