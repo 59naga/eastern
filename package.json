@@ -10,7 +10,7 @@
     "start": "abby format, test --watch \"*.{js,mjs,json}\"",
     "test": "node --experimental-modules test.mjs",
     "format": "prettier *.{js,mjs} --write",
-    "postversion": "git push --follow-tags"
+    "postversion": "git push --follow-tags && conventional-github-releaser -p atom"
   },
   "dependencies": {
     "chalk": "^2.4.1",

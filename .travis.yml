@@ -1,5 +1,10 @@
-language: node_js
+sudo: false
 cache: yarn
+branches:
+  except:
+    - /^v[0-9]/
+
+language: node_js
 node_js:
   - 10
 deploy:
