@@ -38,7 +38,7 @@ const specs = [
       });
     `,
     1,
-    '',
+    '0 passing',
     EASTERN.MESSAGES.FAIL,
   ],
   [
@@ -77,7 +77,7 @@ const specs = [
       );
     `,
     1,
-    '',
+    '0 passing',
     EASTERN.MESSAGES.FAIL,
   ],
   [
@@ -95,7 +95,7 @@ const specs = [
       });
     `,
     1,
-    '',
+    '0 passing',
     EASTERN.MESSAGES.FAIL,
   ],
   [
@@ -117,6 +117,25 @@ const specs = [
     `,
     0,
     'Eastern: 3 passing',
+  ],
+  [
+    'should handle beforeEach/afterEach hooks if spec defined',
+    `
+      import spec from "../../index.mjs";
+      import { strictEqual } from "assert";
+
+      let i = 0;
+      spec.beforeEach(() => {
+        i++
+      });
+      spec.afterEach(() => {
+        strictEqual(i, 1000000000000000)
+      });
+      spec("", () => {strictEqual(i++, 1)})
+    `,
+    1,
+    '1 passing',
+    EASTERN.MESSAGES.FAIL,
   ],
 ];
 
@@ -141,16 +160,30 @@ const evaluteExperimentalModule = (
       file,
     ]);
     child.stdout.on('data', data => {
-      const stdout = stripAnsi(data.toString()).trim();
-      if (stdout.match(/^Eastern: /)) {
-        actualPass += stdout.replace(/\(\d+ ms\)/, '').trim();
-      }
+      // console.log(data.toString());
+      data
+        .toString()
+        .split('\n')
+        .forEach(line => {
+          const stdout = stripAnsi(line)
+            .replace(/\(\d+ m?s\)/, '')
+            .trim();
+          if (stdout.match(/passing$/)) {
+            actualPass += stdout.trim();
+          }
+        });
     });
     child.stderr.on('data', data => {
-      const stderr = stripAnsi(data.toString()).trim();
-      if (stderr.match(/^Eastern: /)) {
-        actualError += stderr.trim();
-      }
+      // console.log(data.toString());
+      data
+        .toString()
+        .split('\n')
+        .forEach(line => {
+          const stderr = stripAnsi(line.toString()).trim();
+          if (stderr.match(/^Eastern: /)) {
+            actualError += stderr.trim();
+          }
+        });
     });
     child.on('exit', code => {
       try {
