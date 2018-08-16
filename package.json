@@ -1,0 +1,42 @@
+{
+  "private": true,
+  "name": "eastern",
+  "version": "1.0.0-pre",
+  "description": "a minimal BDD interface / reporter for ESM Modules",
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "chalk": "^2.4.1",
+    "exit-hook": "^2.0.0"
+  },
+  "scripts": {
+    "start": "abby format, test --watch \"{./,src,test}/**/*.mjs\"",
+    "test": "node --experimental-modules --no-warnings test/index.mjs",
+    "format": "prettier \"{./,src,test}/**/*.mjs\" --write --loglevel silent",
+    "postversion": "git push --follow-tags && conventional-github-releaser -p atom"
+  },
+  "devDependencies": {
+    "abigail": "^1.9.5",
+    "assert-diff": "^2.0.3",
+    "delay": "^3.0.0",
+    "globby": "^8.0.1",
+    "mkdirp": "^0.5.1",
+    "prettier": "^1.14.2"
+  },
+  "keywords": [
+    "mjs",
+    "test"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/59naga/eastern.git"
+  },
+  "author": "59naga <i59naga@icloud.com>",
+  "bugs": {
+    "url": "https://github.com/59naga/eastern/issues"
+  },
+  "homepage": "https://github.com/59naga/eastern#readme",
+  "license": "MIT"
+}
