@@ -98,6 +98,26 @@ const specs = [
     '',
     EASTERN.MESSAGES.FAIL,
   ],
+  [
+    'should handle before/after hooks if spec defined',
+    `
+      import spec from "../../index.mjs";
+      import { strictEqual } from "assert";
+
+      let i = 0;
+      spec.before(() => {
+        strictEqual(i++, 0);
+      });
+      spec("", () => {i++});
+      spec("", () => {i++});
+      spec("", () => {i++});
+      spec.after(() => {
+        strictEqual(i, 4);
+      });
+    `,
+    0,
+    'Eastern: 3 passing',
+  ],
 ];
 
 const fixtureDir = './node_modules/~';
