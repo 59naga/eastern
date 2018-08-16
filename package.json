@@ -1,7 +1,7 @@
 {
   "name": "eastern",
   "description": "a minimal BDD interface / reporter for ESM Modules",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "main": "index.mjs",
   "files": [
     "index.mjs"
