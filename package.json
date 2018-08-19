@@ -1,7 +1,6 @@
 {
-  "private": true,
   "name": "eastern",
-  "version": "1.0.0-pre",
+  "version": "1.0.0",
   "description": "a minimal BDD interface / reporter for ESM Modules",
   "files": [
     "src"
