@@ -1,3 +1,7 @@
+<p align="right">
+  <img width="300" alt="Eastern" src="https://user-images.githubusercontent.com/1548478/44305426-d7365080-a3b1-11e8-9f7d-0ea817f15db0.png">
+</p>
+
 Eastern
 ---
 
