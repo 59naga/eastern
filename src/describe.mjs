@@ -143,13 +143,14 @@ export default class Describe {
       return this.itSkip(title);
     }
 
-    this.taskCount++;
     const args = [...arguments];
+    this.taskCount++;
     this.tasks.push([
       title,
       async () => {
         if (this.isOnly) {
-          return this.itSkip(title);
+          this.taskCount--;
+          return this.opts.reporter.skip(title);
         }
         await this.run(...args);
       }
@@ -169,7 +170,7 @@ export default class Describe {
   }
   itSkip(title) {
     this.taskCount++;
-    this.opts.reporter.skip(title);
+    this.tasks.push([title, async () => this.opts.reporter.skip(title)]);
   }
   async run(title, fn, options) {
     const start = Date.now();
