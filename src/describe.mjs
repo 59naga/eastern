@@ -98,8 +98,8 @@ export default class Describe {
     return fn.call(describe, describe.block);
   }
   child(title, options) {
-    const opts = Object.assign({}, this.opts, options);
-    opts.reporter = opts.reporter.child();
+    const opts = Object.assign({}, options);
+    opts.reporter = this.opts.reporter.child();
     const child = new this.constructor(this, opts);
     this.children.push(child);
     return child;
