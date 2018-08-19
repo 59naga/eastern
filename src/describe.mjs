@@ -7,6 +7,7 @@ export default class Describe {
     this.opts = Object.assign(
       {
         timeout: 1000,
+        immediate: true,
         concurrency: Infinity
       },
       options
@@ -39,40 +40,47 @@ export default class Describe {
     this.block.setOptions = this.setOptions.bind(this);
 
     this.waitForChildren = this.waitForChildren.bind(this);
+    this.evaluted = new Promise(resolve => {
+      if (this.opts.immediate) {
+        this.evaluateBlock = () => {};
+        setImmediate(resolve);
+      } else {
+        this.evaluateBlock = resolve;
+      }
+    });
     this.finish = new Promise(finish => {
-      this.busy = new Promise(free => {
+      this.busy = new Promise(async free => {
+        await this.evaluted;
+        try {
+          await Promise.each(this.hooks.before, Promise.try);
+        } catch (error) {
+          this.opts.reporter.fail("before hooks", error);
+          process.emit("exit");
+        }
+
+        while (this.tasks.length) {
+          const tasks = this.tasks.slice();
+          this.tasks.length = 0;
+
+          if (this.opts.concurrency === 1) {
+            await Promise.each(tasks, ([title, task]) => task());
+          } else {
+            await Promise.map(tasks, ([title, task]) => task(), {
+              concurrency: this.opts.concurrency || Infinity
+            });
+          }
+        }
+        free();
+
         setImmediate(async () => {
+          await this.waitForChildren();
           try {
-            await Promise.each(this.hooks.before, Promise.try);
+            await Promise.each(this.hooks.after, Promise.try);
           } catch (error) {
-            this.opts.reporter.fail("before hooks", error);
+            this.opts.reporter.fail("after hooks", error);
             process.emit("exit");
           }
-
-          while (this.tasks.length) {
-            const tasks = this.tasks.slice();
-            this.tasks.length = 0;
-
-            if (this.opts.concurrency === 1) {
-              await Promise.each(tasks, ([title, task]) => task());
-            } else {
-              await Promise.map(tasks, ([title, task]) => task(), {
-                concurrency: this.opts.concurrency || Infinity
-              });
-            }
-          }
-          free();
-
-          setImmediate(async () => {
-            await this.waitForChildren();
-            try {
-              await Promise.each(this.hooks.after, Promise.try);
-            } catch (error) {
-              this.opts.reporter.fail("after hooks", error);
-              process.emit("exit");
-            }
-            finish();
-          });
+          finish();
         });
       });
     });
