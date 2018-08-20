@@ -155,6 +155,7 @@ beep
 ## `spec.beforeEach`
 
 ```js
+spec.setOptions({ concurrency: 1 });
 spec.beforeEach(async () => {
   await delay(5);
   console.log("foo");
@@ -180,6 +181,7 @@ foo
 ```js
 import delay from "delay";
 
+spec.setOptions({ concurrency: 1 });
 spec.afterEach(async () => {
   await delay(5);
   console.log("bar");
@@ -200,15 +202,18 @@ bar
   3 passing (28 ms)
 ```
 
-## `spec.setOptions`
+## `spec.setOptions` / `it.setOptions`
 
 ```js
 spec.setOptions({ concurrency: 1, timeout: 100 });
 ```
 
+> Specs of the same level are executed in parallel, and there is a possibility that hooks conflict.
+> In that case, please set the `concurrency` of that level to 1 and execute it in series. using `spec.setOptions`
+
 BDD Interface
 ---
-## `describe(title, fn)`
+## `describe(title, fn(spec){})`
 ## `describe(title)`, `describe.skip(title)`
 
 ```js

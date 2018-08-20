@@ -15,6 +15,7 @@ describe("1", ({ before, beforeEach, afterEach, after, it, describe }) => {
     console.log("  1-after");
   });
 
+  it.setOptions({ concurrency: 1 });
   it("1-1");
   it.skip("1-2");
   it("1-notonly-1", () => {});
@@ -40,6 +41,7 @@ describe("1", ({ before, beforeEach, afterEach, after, it, describe }) => {
       console.log("      3-after");
     });
 
+    it.setOptions({ concurrency: 1 });
     it("3-1");
     it.skip("3-2");
     it("3-notonly-1", () => {});

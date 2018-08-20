@@ -149,14 +149,10 @@ export default class Describe {
   }
 
   beforeEach() {
-    this.setOptions({ concurrency: 1 });
-
     const args = [...arguments];
     this.hooks.beforeEach.push(() => execute(...args));
   }
   afterEach() {
-    this.setOptions({ concurrency: 1 });
-
     const args = [...arguments];
     this.hooks.afterEach.push(() => execute(...args));
   }
