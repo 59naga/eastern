@@ -21,6 +21,7 @@ export default class Describe {
       after: []
     };
     this.tasks = [];
+    this.describes = [];
     this.taskCount = 0;
 
     this.beforeEach = this.beforeEach.bind(this);
@@ -48,54 +49,54 @@ export default class Describe {
         this.evaluateBlock = resolve;
       }
     });
-    this.finish = new Promise(finish => {
-      this.busy = new Promise(async free => {
-        await this.evaluted;
+    this.finish = new Promise(async finish => {
+      await this.evaluted;
+      try {
+        await Promise.each(this.hooks.before, Promise.try);
+      } catch (error) {
+        this.opts.reporter.fail("before hooks", error);
+        process.emit("exit");
+      }
+
+      while (this.tasks.length) {
+        const tasks = this.tasks.slice();
+        this.tasks.length = 0;
+
+        if (this.opts.concurrency === 1) {
+          await Promise.each(tasks, ([title, task]) => task());
+        } else {
+          await Promise.map(tasks, ([title, task]) => task(), {
+            concurrency: this.opts.concurrency || Infinity
+          });
+        }
+      }
+      await Promise.each(this.describes, describe => describe());
+
+      setImmediate(async () => {
+        await this.waitForChildren();
         try {
-          await Promise.each(this.hooks.before, Promise.try);
+          await Promise.each(this.hooks.after, Promise.try);
         } catch (error) {
-          this.opts.reporter.fail("before hooks", error);
+          this.opts.reporter.fail("after hooks", error);
           process.emit("exit");
         }
-
-        while (this.tasks.length) {
-          const tasks = this.tasks.slice();
-          this.tasks.length = 0;
-
-          if (this.opts.concurrency === 1) {
-            await Promise.each(tasks, ([title, task]) => task());
-          } else {
-            await Promise.map(tasks, ([title, task]) => task(), {
-              concurrency: this.opts.concurrency || Infinity
-            });
-          }
-        }
-        free();
-
-        setImmediate(async () => {
-          await this.waitForChildren();
-          try {
-            await Promise.each(this.hooks.after, Promise.try);
-          } catch (error) {
-            this.opts.reporter.fail("after hooks", error);
-            process.emit("exit");
-          }
-          finish();
-        });
+        finish();
       });
     });
   }
-  async describe(title, fn, options = {}) {
-    await this.busy;
+  describe(title, fn, options = {}) {
+    this.describes.push(() => {
+      const describe = this.child(title, options);
+      const reporter = this.opts.reporter;
 
-    const describe = this.child(title, options);
-    const reporter = this.opts.reporter;
+      reporter.describe(title, fn);
+      if (fn === undefined) {
+        return;
+      }
+      fn.call(describe, describe.block);
 
-    reporter.describe(title, fn);
-    if (fn === undefined) {
-      return;
-    }
-    return fn.call(describe, describe.block);
+      return describe.finish;
+    });
   }
   child(title, options) {
     const opts = Object.assign({}, options);
