@@ -12,8 +12,9 @@ export default class Describe {
       },
       options
     );
-    
-    this.isOnly = false;
+
+    this.isDescribeOnly = false;
+    this.isItOnly = false;
     this.hooks = {
       before: [],
       beforeEach: [],
@@ -32,6 +33,7 @@ export default class Describe {
     this.block = this.it.bind(this);
     this.block.describe = this.describe.bind(this);
     this.block.describe.skip = this.describeSkip.bind(this);
+    this.block.describe.only = this.describeOnly.bind(this);
     this.block.it = this.block;
     this.block.skip = this.itSkip.bind(this);
     this.block.only = this.itOnly.bind(this);
@@ -90,10 +92,11 @@ export default class Describe {
       const describe = this.child(title, options);
       const reporter = this.opts.reporter;
 
-      reporter.describe(title, fn);
-      if (fn === undefined) {
+      if (this.isDescribeOnly || fn === undefined) {
+        reporter.describe(title);
         return;
       }
+      reporter.describe(title, fn);
       fn.call(describe, describe.block);
 
       return describe.finish;
@@ -106,6 +109,22 @@ export default class Describe {
       reporter.describe(title);
 
       return Promise.resolve();
+    });
+  }
+  describeOnly(title, fn, options = {}) {
+    this.isDescribeOnly = true;
+    this.describes.push(() => {
+      const describe = this.child(title, options);
+      const reporter = this.opts.reporter;
+
+      if (fn === undefined) {
+        reporter.describe(title);
+        return;
+      }
+      reporter.describe(title, fn);
+      fn.call(describe, describe.block);
+
+      return describe.finish;
     });
   }
   child(title, options) {
@@ -159,7 +178,7 @@ export default class Describe {
     this.tasks.push([
       title,
       async () => {
-        if (this.isOnly) {
+        if (this.isItOnly) {
           this.taskCount--;
           return this.opts.reporter.skip(title);
         }
@@ -169,7 +188,7 @@ export default class Describe {
   }
   itOnly(title) {
     this.taskCount++;
-    this.isOnly = true;
+    this.isItOnly = true;
 
     const args = [...arguments];
     this.tasks.push([
