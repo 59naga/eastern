@@ -45,7 +45,7 @@ spec("foo", () => {});
   1 passing (7 ms)
 ```
 
-## `spec(title)`, `spec.skip`
+## `spec(title)`, `spec.skip(title)`
 
 ```js
 spec("foo");
@@ -209,6 +209,7 @@ spec.setOptions({ concurrency: 1, timeout: 100 });
 BDD Interface
 ---
 ## `describe(title, fn)`
+## `describe(title)`, `describe.skip(title)`
 
 ```js
 import { describe } from "eastern";

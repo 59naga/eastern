@@ -12,7 +12,7 @@ export default class Describe {
       },
       options
     );
-
+    
     this.isOnly = false;
     this.hooks = {
       before: [],
@@ -31,6 +31,7 @@ export default class Describe {
 
     this.block = this.it.bind(this);
     this.block.describe = this.describe.bind(this);
+    this.block.describe.skip = this.describeSkip.bind(this);
     this.block.it = this.block;
     this.block.skip = this.itSkip.bind(this);
     this.block.only = this.itOnly.bind(this);
@@ -96,6 +97,15 @@ export default class Describe {
       fn.call(describe, describe.block);
 
       return describe.finish;
+    });
+  }
+  describeSkip(title) {
+    this.describes.push(() => {
+      const reporter = this.opts.reporter;
+
+      reporter.describe(title);
+
+      return Promise.resolve();
     });
   }
   child(title, options) {
