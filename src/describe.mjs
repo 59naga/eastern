@@ -97,7 +97,7 @@ export default class Describe {
         return;
       }
       reporter.describe(title, fn);
-      fn.call(describe, describe.block);
+      fn.call(describe, describe.block, describe.block.describe);
 
       return describe.finish;
     });
@@ -122,7 +122,7 @@ export default class Describe {
         return;
       }
       reporter.describe(title, fn);
-      fn.call(describe, describe.block);
+      fn.call(describe, describe.block, describe.block.describe);
 
       return describe.finish;
     });

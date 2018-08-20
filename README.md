@@ -213,14 +213,14 @@ spec.setOptions({ concurrency: 1, timeout: 100 });
 
 BDD Interface
 ---
-## `describe(title, fn(spec){})`
+## `describe(title, fn(spec, describe){})`
 ## `describe(title)`, `describe.skip(title)`
 
 ```js
 import { describe } from "eastern";
 import delay from "delay";
 
-describe("1", ({ before, beforeEach, afterEach, after, it, describe }) => {
+describe("1", ({ before, beforeEach, afterEach, after, it }, describe) => {
   before(() => {
     console.log("  1-before");
   });
@@ -245,7 +245,7 @@ describe("1", ({ before, beforeEach, afterEach, after, it, describe }) => {
   });
 
   describe("2");
-  describe("3", ({ before, beforeEach, afterEach, after, it, describe }) => {
+  describe("3", ({ before, beforeEach, afterEach, after, it }, describe) => {
     before(() => {
       console.log("      3-before");
     });
