@@ -14,14 +14,24 @@ Eastern
   </a>
 </p>
 
-a minimal BDD Framework for [ESM Modules](https://nodejs.org/api/esm.html#esm_enabling)
+a minimal & blazing fast BDD Framework for [ESM Modules](https://nodejs.org/api/esm.html#esm_enabling)
 
 Installation
 ---
+
 ```bash
+npm install eastern eastern-cli --global
+# or
 yarn global add eastern eastern-cli
-eastern -v
-# 1.0.0
+```
+
+The `eastern` command defines `global.it`, `global.describe`.
+And find and run `test.mjs` / `test/**/*.mjs`.
+
+```bash
+eastern
+# 
+#   0 passing (5 ms)
 ```
 
 API
@@ -76,6 +86,7 @@ it.only("bar", () => {});
 
 ```
   -  foo
+  ✓  bar (2 ms)
   ✓  bar (2 ms)
 
   1 passing (8 ms)
