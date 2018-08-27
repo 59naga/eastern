@@ -201,12 +201,12 @@ it("foo", () => {});
 ```
 
 ```
+bar
   ✓  foo (1 ms)
 bar
   ✓  foo (0 ms)
 bar
-  ✓  foo (1 ms)
-bar
+  ✓  foo (0 ms)
 
   3 passing (28 ms)
 ```
@@ -282,31 +282,31 @@ describe("1", it, describe) => {
     -  1-2
     -  1-notonly-1
   1-beforeEach
+  1-afterEach
     ✓  1-only-1 (7 ms)
-  1-afterEach
   1-beforeEach
-    ✓  1-only-2 (6 ms)
   1-afterEach
-    2
+    ✓  1-only-2 (6 ms)
+    -  2
     3
       3-before
       -  3-1
       -  3-2
       -  3-notonly-1
       3-beforeEach
+      3-afterEach
       ✓  3-only-1 (7 ms)
-      3-afterEach
       3-beforeEach
-      ✓  3-only-2 (6 ms)
       3-afterEach
-      4
+      ✓  3-only-2 (6 ms)
+      -  4
       5
         -  5
       3-after
   1-after
 
   4 passing (39 ms)
-  7 pending
+  9 pending
 
 TEST FAILING
 ```
