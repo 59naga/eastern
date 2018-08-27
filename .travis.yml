@@ -1,0 +1,16 @@
+sudo: false
+cache: yarn
+branches:
+  except:
+    - /^v[0-9]/
+
+language: node_js
+node_js:
+  - 10
+deploy:
+  provider: npm
+  email: i59naga@icloud.com
+  api_key:
+    secure: AnxKJ8FiIU4JLIsXe/Y4oRs5cGOa64wvktWtSI+M27B05LvpTHCOlTY7dOiiYKfFYPhzE+JNLl1DAoWNg7Rj2aFpRQ9nl58dWi6Pb5wdP195VEO4r3A70/FDT9JBQDBerse66VfA6eRkbHcqBWeJdwNzxzB6i4RYe0PlmykoA1tVarKdgwTqO24MeAyN6+Xff0Xmhy+aC9/YPSL+9LQKfxS46xu7IRwIwg7pPCXHqtwByrgin5fDRIUqNfmqOFZ1C4hrnWgBFSiHKSNqIKexnTcjjLmPKqvLow9ZGdNVQK8DVXmtooHtW97kbDfE11t1fC4sI7de/U8rOQA/y7fepcGCpPTpoxLhKuGfnzwUia4xkKQSYd1dYL8ZayPKc3085AUNkL/ox+NMt+bvGn/ic5MLMPim9dy68PzQAn5zLDZ+rwseN3xIV4GQ3BpT5Bj7fzCACfWKXxTA5EOiaRxVi9qJe8up789RhHTbS/zKOWOVIcQ6tOOgvzgeRKXU8xPtBec+K1ANtm0J6UJJn04IFUmW4mUfRVAmckEVOV/c0BOpLT+gfIL9EHyMwmdMOmHw/q2cETQ2qXQdvuI+6NK4Iha4oeeiKZ17utpyg5ty4Hh1KCDEfC0OpvcJmmSeGpRtLXZlcv/zAeVbXzGy9XxD6D5XxQAagsvsig+lKxD51XY=
+  on:
+    repo: 59naga/eastern
