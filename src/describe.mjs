@@ -65,6 +65,7 @@ export default class Describe {
     this.methodAllBind();
     this.it.skip = this.itSkip;
     this.it.only = this.itOnly;
+    this.it.setOptions = this.setOptions;
     hookNames.reduce((hooks, key) => {
       this.it[key] = this[key];
       return hooks;
