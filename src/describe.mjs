@@ -79,7 +79,6 @@ export default class Describe {
     if (this.hooks[key].length === 0) {
       return [];
     }
-    reporter.emit("hook", key);
 
     const values = await Promise.reduce(
       this.hooks[key],
@@ -89,8 +88,6 @@ export default class Describe {
       },
       []
     );
-
-    reporter.emit("hook end", key);
 
     return values;
   }
@@ -131,7 +128,6 @@ export default class Describe {
       }
 
       reporter.emit(test.state, test, error);
-      reporter.emit("test end", test, error);
       return values;
     });
   }
