@@ -14,6 +14,6 @@ process.on("unhandledRejection", function(error) {
   const glob = process.argv.slice(2)[0];
   const url = new URL(glob, new URL(`file://${process.cwd()}/`));
   const { expects = [], fails = [] } = await import(url);
-  deepEqual(expects, await root.evaluate(mockReporter));
+  deepEqual(expects, await root.evaluate(mockReporter), url);
   deepEqual(fails, mockReporter.failures, url);
 })();

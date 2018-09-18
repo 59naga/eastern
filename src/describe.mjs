@@ -156,6 +156,7 @@ export default class Describe {
   }
   itOnly(title, fn, options = {}) {
     this.setOptionsRoot({ only: true });
+    this.setOptions({ onlyIgnore: false });
     this.it(title, fn, Object.assign({}, options, { onlyIgnore: true }));
   }
   describe(title, fn, options = {}) {
