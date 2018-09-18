@@ -1,22 +1,6 @@
 import Promise from "bluebird";
 import throat from "throat";
 
-/**
- * TODO: retry option
- *
- *   - `start`  execution started
- *   - `end`  execution complete
- *   - `suite`  (suite) test suite execution started
- *   - `suite end`  (suite) all tests (and sub-suites) have finished
- *   - `test`  (test) test execution started
- *   - `test end`  (test, err) test completed
- *   - `hook`  (hook) hook execution started
- *   - `hook end`  (hook) hook complete
- *   - `passed`  (test) test passed
- *   - `failed`  (test, err) test failed
- *   - `pending`  (test) test pending
- */
-
 const hookNames = ["before", "beforeEach", "afterEach", "after"];
 const defaultOptions = {
   timeout: 1000,
