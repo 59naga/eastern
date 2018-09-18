@@ -1,6 +1,6 @@
 {
   "name": "eastern",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "a minimal BDD framework for ESM Modules",
   "main": "src",
   "files": [
